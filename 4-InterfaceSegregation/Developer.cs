@@ -1,6 +1,6 @@
 namespace InterfaceSegregation
 {
-    public class Developer : IActivities
+    public class Developer : IWorkTeamActivities
     {
         public Developer()
         {
