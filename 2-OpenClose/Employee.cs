@@ -8,11 +8,5 @@ namespace OpenClose
         public int HoursWorked {get; set;}
 
         public abstract decimal CalculateSalaryMonthly();
-
-        // public EmployeeFulltime(string fullname, int hoursworked)
-        // {
-        //     Fullname = fullname;
-        //     HoursWorked = hoursworked; 
-        // }
     }
 }
