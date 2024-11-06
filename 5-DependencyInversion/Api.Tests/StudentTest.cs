@@ -1,43 +1,38 @@
 using Xunit;
-using DependencyInversion.Controllers;
 using Moq;
 using DependencyInversion;
+using DependencyInversion.Controllers;
+using System.Collections.Generic;
 
-namespace Api.Tests;
-
-
-public class StudentTest 
+namespace Api.Tests
 {
-    [Fact]
-    public void GetStudent()
+    public class StudentTest
     {
-        var studentController = new StudentController();
+        [Fact]
+        public void GetStudent_ReturnsListOfStudents()
+        {
+            // Arrange: Crear mocks de las dependencias
+            var mockStudentRepository = new Mock<IStudentRepository>();
+            var mockLogbook = new Mock<ILogbook>();
 
-        var resultGetStudents = studentController.Get();
+            // Configurar el mock de IStudentRepository para que devuelva una lista simulada de estudiantes
+            mockStudentRepository.Setup(repo => repo.GetAll())
+                                 .Returns(new List<Student>
+                                 {
+                                     new Student(1, "Pepito Pérez", new List<double>{3, 4.5}),
+                                     new Student(2, "Mariana Lopera", new List<double>{4, 5}),
+                                     new Student(3, "José Molina", new List<double>{2, 3})
+                                 });
 
-        Assert.NotNull(resultGetStudents);
-        Assert.Equal(3, resultGetStudents.Count());
+            // Crear el controlador con las dependencias mockeadas
+            var studentController = new StudentController(mockStudentRepository.Object, mockLogbook.Object);
+
+            // Act: Llamar al método Get() del controlador
+            var resultGetStudents = studentController.Get();
+
+            // Assert: Verificar que el resultado no es nulo y contiene 3 estudiantes
+            Assert.NotNull(resultGetStudents);
+            Assert.Equal(3, resultGetStudents.Count());
+        }
     }
-
-
-    // [Fact]
-    // public void GetStudent()
-    // {
-    //     var LogbookMock = new Mock<ILogbook>();
-    //     var stundentRepositoryMock = new Mock<IStudentRepository>();
-    //     stundentRepositoryMock.Setup(p=> p.GetAll())
-    //                                     .Returns(new List<Student>()
-    //                                     {
-    //                                         new Student(1, "Pepito Pérez", new List<double>() { 3, 4.5 }),
-    //                                         new Student(2, "Mariana Lopera", new List<double>() { 4, 5 }),
-    //                                         new Student(3, "José Molina", new List<double>() { 2, 3 })
-    //                                     });
-
-    //     var studentController = new StudentController();
-
-    //     var resultGetStudents = studentController.Get();
-
-    //     Assert.NotNull(resultGetStudents);
-    //     Assert.Equal(3, resultGetStudents.Count());
-    // }
 }

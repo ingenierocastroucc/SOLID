@@ -1,24 +1,35 @@
 using Microsoft.AspNetCore.Mvc;
+using DependencyInversion;
 
-namespace DependencyInversion.Controllers;
-
-[ApiController, Route("student")]
-public class StudentController : ControllerBase
+namespace DependencyInversion.Controllers
 {
-    StudentRepository studentRepository = new StudentRepository();
-    Logbook logbook = new Logbook();
-
-    [HttpGet]
-    public IEnumerable<Student> Get()
+    [ApiController]
+    [Route("student")]
+    public class StudentController : ControllerBase
     {
-        logbook.Add($"returning student's list");
-        return studentRepository.GetAll();
-    }
+        IStudentRepository studentRepository;
+        ILogbook logbook;
 
-    [HttpPost]
-    public void Add([FromBody]Student student)
-    {
-        studentRepository.Add(student);
-        logbook.Add($"The Student {student.Fullname} have been added");
+        // Constructor de inyección de dependencias
+        public StudentController(IStudentRepository student, ILogbook log)
+        {
+            studentRepository = student;  // Asignamos correctamente el parámetro al campo
+            logbook = log;  // Corregido el nombre de la variable
+        }
+
+        [HttpGet]
+        public IEnumerable<Student> Get()
+        {
+            logbook.Add("Returning student's list");
+            return studentRepository.GetAll();
+        }
+
+        [HttpPost]
+        public IActionResult Add([FromBody] Student student)
+        {
+            studentRepository.Add(student);
+            logbook.Add($"The Student {student.Fullname} has been added");
+            return Ok();
+        }
     }
 }
